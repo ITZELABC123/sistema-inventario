@@ -9,7 +9,7 @@ this.existencia = existencia;
 mostrarInformacion() {
 console.log("Codigo: " + this.codigo);
 console.log("Nombre: " + this.nombre);
-console.log("Precio: $" + this.precio.toFixed(2));
+console.log("Precio: $" + (this.precio + 10).toFixed(2));
 console.log("Existencia: " + this.existencia);
 }
 }
