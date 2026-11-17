@@ -1,0 +1,38 @@
+name: Liberacion del Sistema de Inventario
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  liberar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ejecutar pruebas
+        run: npm test
+
+      - name: Crear paquete
+        run: |
+          zip -r sistema-inventario-${GITHUB_REF_NAME}.zip src/
+
+      - name: Publicar version
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sistema-inventario-${{ github.ref_name }}.zip
+          generate_release_notes: true
