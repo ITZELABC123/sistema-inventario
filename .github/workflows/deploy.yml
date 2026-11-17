@@ -1,0 +1,40 @@
+name: Despliegue del Sistema de Inventario
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version liberada a desplegar (etiqueta de GitHub Releases)'
+        required: true
+        default: 'v1.0.2'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
+
+    steps:
+      - name: Descargar version liberada
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: ${{ github.repository }}
+          tag: ${{ inputs.version }}
+          fileName: sistema-inventario-${{ inputs.version }}.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Preparar directorio de despliegue
+        run: |
+          mkdir -p "despliegue/version-$VERSION"
+          unzip -o "sistema-inventario-$VERSION.zip" -d "despliegue/version-$VERSION"
+
+      - name: Verificar archivos
+        run: ls -R despliegue
+
+      - name: Ejecutar el sistema
+        run: node "despliegue/version-$VERSION/src/main.js"
